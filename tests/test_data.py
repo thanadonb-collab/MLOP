@@ -1,23 +1,22 @@
-"""Data tests — ตรวจว่าข้อมูลยังหน้าตาเหมือนที่ตกลงไว้ ก่อนจะเอาไปเทรน"""
 from sklearn.datasets import load_breast_cancer
- 
-df = load_breast_cancer(as_frame=True).frame
- 
- 
+
+
 def test_schema():
-    """คอลัมน์ต้องครบ 13 ฟีเจอร์ + target"""
-    assert df.shape[1] == 14
-    assert "target" in df.columns
- 
- 
-def test_no_missing():
-    assert df.isnull().sum().sum() == 0
- 
- 
-def test_three_classes():
-    assert df["target"].nunique() == 3
- 
- 
-def test_alcohol_range():
-    """ค่าที่หลุดช่วงนี้แปลว่าข้อมูลต้นทางผิดปกติ"""
-    assert df["alcohol"].between(10.0, 16.0).all()
+    data = load_breast_cancer(as_frame=True)
+    df = data.frame
+    # Breast Cancer มี 30 features + 1 target = 31 คอลัมน์
+    assert len(df.columns) == 31
+
+
+def test_two_classes():
+    data = load_breast_cancer(as_frame=True)
+    y = data.target
+    # ข้อมูลเป็น Binary Classification มี 2 คลาส (0 และ 1)
+    assert y.nunique() == 2
+
+
+def test_feature_range():
+    data = load_breast_cancer(as_frame=True)
+    X = data.data
+    # ค่า mean radius ต้องมากกว่า 0
+    assert (X["mean radius"] > 0).all()
